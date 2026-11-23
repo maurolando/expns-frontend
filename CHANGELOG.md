@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.16.0](https://github.com/maurolando/expns-frontend/compare/v1.15.0...v1.16.0) (2026-11-23)
+
+
+### Features
+
+* FAB de nuevo gasto en todas las pantallas ([49425e6](https://github.com/maurolando/expns-frontend/commit/49425e6834f6ba9440fb6a0689640de481fd7260))
+* lista de gastos sin scroll de página y estética unificada ([61501e8](https://github.com/maurolando/expns-frontend/commit/61501e8c90862c57f990695b742c8a8bdd762c53))
+
 ## [1.15.0](https://github.com/maurolando/expns-frontend/compare/v1.14.1...v1.15.0) (2026-11-16)
 
 

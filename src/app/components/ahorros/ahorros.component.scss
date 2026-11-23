@@ -286,13 +286,6 @@
         background: transparent;
         border-collapse: collapse;
 
-        th.mat-mdc-header-cell {
-          font-family: 'Outfit', sans-serif;
-          font-weight: 600;
-          color: var(--text-secondary);
-          border-bottom: 1px solid var(--border-color);
-        }
-
         td.mat-mdc-cell {
           color: var(--text-primary);
           border-bottom: 1px solid rgba(255, 255, 255, 0.05);

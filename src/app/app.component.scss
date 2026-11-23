@@ -219,13 +219,6 @@
 }
 
 // --- Botón de nuevo gasto (ley de Fitts) ---
-.nuevo-gasto-lateral {
-  width: calc(100% - 20px);
-  min-height: 52px;
-  margin: 0 10px 12px;
-  border-radius: 14px;
-}
-
 .fab-gasto {
   position: fixed;
   right: 16px;
@@ -236,9 +229,7 @@
 }
 
 // Va al final para ganarle al padding de los cortes de arriba: el último
-// ítem de cada lista tiene que poder quedar por encima del FAB.
-@media (max-width: 900px) {
-  .main-content {
-    padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
-  }
+// ítem de cada lista (y el paginador) tiene que quedar por encima del FAB.
+.main-content {
+  padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
 }

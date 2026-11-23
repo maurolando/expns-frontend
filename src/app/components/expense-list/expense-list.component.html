@@ -2,7 +2,6 @@
   <div class="page-header">
     <div>
       <h1 class="page-title">Gastos</h1>
-      <p class="page-subtitle">Todo lo que se gastó, con filtros por persona, categoría y fecha</p>
     </div>
     <div class="page-actions">
     <ng-container *ngIf="selectedGasto">
@@ -53,6 +52,8 @@
     </button>
   </div>
 
+  <!-- Solo esto scrollea: el paginador queda siempre a la vista. -->
+  <div class="lista-scroll">
   <!-- Móvil: las 7 columnas de la tabla no entran en un teléfono. -->
   <div class="gastos-cards" *ngIf="esMovil$ | async">
     <div class="gasto-card" *ngFor="let g of filas$ | async">
@@ -185,12 +186,13 @@
     </ng-container>
 
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"
         class="fila-seleccionable"
         [class.selected]="selectedGasto?.id === row.id"
         (click)="selectGasto(row)"></tr>
   </table>
+  </div>
 
   <!-- Paginación -->
   <mat-paginator [pageSizeOptions]="[15, 25, 50, 100]"

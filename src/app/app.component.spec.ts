@@ -67,4 +67,12 @@ describe('AppComponent', () => {
     fixtureActual.detectChanges();
     expect(pagina.querySelector('.fab-gasto')).toBeNull();
   });
+
+  it('en escritorio muestra el FAB y no el botón del menú lateral', async () => {
+    TestBed.overrideProvider(AuthService, { useValue: { currentUser$: new BehaviorSubject({ nombre: 'ANA' }) } });
+    TestBed.overrideProvider(LayoutService, { useValue: { esMovil$: of(false), esMovil: false } });
+    const pagina = await renderEn('/gastos');
+    expect(pagina.querySelector('.fab-gasto')).not.toBeNull();
+    expect(pagina.querySelector('.sidenav-content')?.textContent).not.toContain('Nuevo gasto');
+  });
 });

@@ -160,7 +160,14 @@ h1, h2, h3, h4, h5, h6 {
   background-color: transparent !important;
 }
 
+// Mismo encabezado en todas las tablas. Opaco porque en Gastos queda fijo al
+// scrollear y las filas no se tienen que leer a través.
 .mat-mdc-header-cell {
+  background: #2b1338 !important;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  &:first-child { border-top-left-radius: var(--radius-sm); }
+  &:last-child { border-top-right-radius: var(--radius-sm); }
   color: var(--text-secondary) !important;
   font-size: 0.85rem !important;
   text-transform: uppercase;
@@ -333,6 +340,21 @@ textarea[matInput]:not(.sin-mayusculas) {
   border-radius: var(--radius-md) !important;
 }
 
+// Tooltips en vidrio ciruela, como los menús, en vez del gris de Material.
+.mat-mdc-tooltip {
+  --mdc-plain-tooltip-container-color: var(--glass-bg-strong);
+  --mdc-plain-tooltip-supporting-text-color: var(--text-primary);
+
+  .mdc-tooltip__surface {
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--glass-highlight), var(--glass-shadow);
+    padding: 6px 12px;
+  }
+}
+
 // Contenedor de cada ventana: mismo ancho máximo y mismos márgenes en todas.
 .page {
   max-width: 1200px;
@@ -342,7 +364,7 @@ textarea[matInput]:not(.sin-mayusculas) {
   gap: 24px;
 }
 
-// Encabezado de cada ventana: título y subtítulo a la izquierda, acciones a la
+// Encabezado de cada ventana: título a la izquierda, acciones a la
 // derecha. En pantalla chica las acciones bajan debajo del título.
 .page-header {
   display: flex;
@@ -356,12 +378,6 @@ textarea[matInput]:not(.sin-mayusculas) {
     font-weight: 700;
     margin: 0;
     color: var(--text-primary);
-  }
-
-  .page-subtitle {
-    margin: 4px 0 0;
-    color: var(--text-secondary);
-    font-size: 0.95rem;
   }
 
   .page-actions {

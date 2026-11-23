@@ -1,4 +1,13 @@
+// Alto fijo al de la ventana: la página no scrollea, solo la lista de adentro.
+:host { display: block; height: 100%; }
+.page { height: 100%; }
+
 .list-container {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+
   // Issue #38: la misma tarjeta de vidrio en Gastos, Ingresos y Personas.
   background: var(--glass-sheen), var(--glass-bg);
   backdrop-filter: var(--glass-blur);
@@ -10,6 +19,12 @@
   overflow: hidden;
 
   @media (max-width: 599px) { padding: 16px 12px; }
+}
+
+.lista-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
 }
 
 .spacer {
@@ -60,14 +75,6 @@
   width: 100%;
   box-shadow: none;
   background: transparent;
-
-  th.mat-mdc-header-cell {
-    font-family: 'Outfit', sans-serif;
-    font-weight: 600;
-    color: var(--text-secondary);
-    border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.05));
-    font-size: 0.95rem;
-  }
 
   td.mat-mdc-cell {
     color: var(--text-primary);

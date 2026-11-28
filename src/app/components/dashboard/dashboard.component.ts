@@ -15,6 +15,7 @@ import { BudgetDialogComponent } from '../budget-dialog/budget-dialog.component'
 import { HogarService } from 'src/app/services/hogar/hogar.service';
 import { periodoDe } from 'src/app/utils/date.util';
 import { AjusteBalanceDialogComponent } from '../ajuste-balance-dialog/ajuste-balance-dialog.component';
+import { AuthService } from 'src/app/services/auth/auth.service';
 
 export interface DueAlert {
   type: 'OVERDUE' | 'DUE_SOON';
@@ -50,6 +51,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   totalIncome$!: Observable<number>;
   totalSavings$!: Observable<number>;
   balance$!: Observable<number>;
+  /** #83: el saldo de quien está logueado; null si vive solo en el hogar. */
+  miSaldo$!: Observable<SaldoPersona | null>;
   count$!: Observable<number>;
   pendingExpenses$!: Observable<Gasto[]>;
   lastDates$!: Observable<any>;
@@ -87,7 +90,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private notify: NotificationService,
     private route: ActivatedRoute,
-    private hogarService: HogarService
+    private hogarService: HogarService,
+    private auth: AuthService
   ) {
     this.vista = this.route.snapshot.data['vista'] ?? 'resumen';
   }
@@ -152,6 +156,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
       map(([_, __, ___, ahorros]) => ahorros.reduce((acc, a) => acc + a.monto, 0))
     );
     this.balance$ = data$.pipe(map(([_, __, balance]) => balance));
+    // Cuelga de data$ y no de filter$: así se recalcula cuando una mutación refresca gastos o ingresos.
+    this.miSaldo$ = data$.pipe(
+      switchMap(() => this.expenseService.getSaldosPorPersona(this.monthControl.value!, this.yearControl.value!)),
+      map(saldos => saldos.length > 1
+        ? saldos.find(s => s.persona.id === this.auth.getUsuarioActual()?.id) ?? null
+        : null)
+    );
     this.count$ = data$.pipe(map(([gastos]) => gastos.length));
     
     this.lastDates$ = listo$.pipe(switchMap(() => this.expenseService.getLastDates()));

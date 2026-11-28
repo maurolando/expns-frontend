@@ -56,10 +56,11 @@
     </button>
   </div>
 
-  <div class="por-forma" *ngIf="(porForma$ | async) as formas">
-    <div class="forma-chip" *ngFor="let f of formas">
-      <span class="forma-nombre">{{ f.forma }}</span>
-      <strong>{{ f.total | number:'1.0-0' }} Gs.</strong>
+  <div class="por-forma" *ngIf="(billeteras$ | async) as billeteras">
+    <div class="forma-chip" *ngFor="let b of billeteras" [class.negativo]="b.saldo < 0">
+      <span class="forma-nombre">{{ b.forma }}</span>
+      <strong>{{ b.saldo | number:'1.0-0' }} Gs.</strong>
+      <span class="forma-detalle">entró {{ b.entro | number:'1.0-0' }} · salió {{ b.salio | number:'1.0-0' }}</span>
     </div>
   </div>
 

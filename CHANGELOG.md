@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.17.0](https://github.com/maurolando/expns-frontend/compare/v1.16.0...v1.17.0) (2026-11-28)
+
+
+### Features
+
+* animaciones del menú, de los montos del balance y al cambiar de pantalla ([#90](https://github.com/maurolando/expns-frontend/issues/90)) ([132c6c6](https://github.com/maurolando/expns-frontend/commit/132c6c6190e961963a93aab50fa08badb09a35e9))
+* botones en cápsula en toda la app, también en los diálogos ([#84](https://github.com/maurolando/expns-frontend/issues/84)) ([7d6d921](https://github.com/maurolando/expns-frontend/commit/7d6d9219323731fe3a82f960c9b8dc19ea0793b5))
+* cerrar sesión al pie del menú lateral ([#85](https://github.com/maurolando/expns-frontend/issues/85)) ([5714b01](https://github.com/maurolando/expns-frontend/commit/5714b010a3a7dd48908fcdd4684fd6d6ac0345ca))
+* edición de ahorros para asignarles billetera ([#82](https://github.com/maurolando/expns-frontend/issues/82)) ([56120d5](https://github.com/maurolando/expns-frontend/commit/56120d51e76c31ff26feb968dc9caeedf3139b54))
+* forma de pago en el ingreso y total por billetera ([#82](https://github.com/maurolando/expns-frontend/issues/82)) ([4606e72](https://github.com/maurolando/expns-frontend/commit/4606e72bec66a3249a3ea3710bfa6096b81bab75))
+* los ahorros descuentan de su billetera y Convenio queda afuera ([#82](https://github.com/maurolando/expns-frontend/issues/82)) ([23d55c7](https://github.com/maurolando/expns-frontend/commit/23d55c79fca46cb0267337a51960d268a99aee8d))
+* saldo real por billetera en ingresos ([#82](https://github.com/maurolando/expns-frontend/issues/82)) ([104c0f2](https://github.com/maurolando/expns-frontend/commit/104c0f2a27e4fc1c57a578c1e98e7dd5fc2c38db))
+* skeletons al cargar listas y spinners en las acciones lentas ([#91](https://github.com/maurolando/expns-frontend/issues/91)) ([b3cc58f](https://github.com/maurolando/expns-frontend/commit/b3cc58f052d4583d5b6dc7e8e423b78427ecdfb2))
+* spinner en ahorro, categoría y persona; spinner del login en la misma fila ([#91](https://github.com/maurolando/expns-frontend/issues/91)) ([d797a2e](https://github.com/maurolando/expns-frontend/commit/d797a2e37ac6d4e269f91895710fa603016d9ac0))
+* tarjeta Mi saldo en el balance cuando el hogar es compartido ([#83](https://github.com/maurolando/expns-frontend/issues/83)) ([957c292](https://github.com/maurolando/expns-frontend/commit/957c292b00377ac54d1814ee7188492426a0a67b))
+
 ## [1.16.0](https://github.com/maurolando/expns-frontend/compare/v1.15.0...v1.16.0) (2026-11-23)
 
 

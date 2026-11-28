@@ -87,7 +87,7 @@
       </mat-card-header>
       <mat-card-content>
         <ng-container *ngIf="{ v: balance$ | async } as d">
-          <h2 *ngIf="d.v !== null; else cargandoMonto">{{ d.v | number:'1.0-0' }} Gs.</h2>
+          <h2 *ngIf="d.v !== null; else cargandoMonto" [appContador]="d.v"></h2>
         </ng-container>
         <button mat-button class="ver-por-persona" (click)="abrirSaldosPorPersona()">
           <mat-icon>groups</mat-icon> Por persona
@@ -104,7 +104,7 @@
         <mat-card-title>Mi saldo</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <h2>{{ mio.saldo | number:'1.0-0' }} Gs.</h2>
+        <h2 [appContador]="mio.saldo"></h2>
         <p class="last-record">
           Ingresé {{ mio.ingresos | number:'1.0-0' }} · gasté {{ mio.gastos | number:'1.0-0' }}<span *ngIf="mio.ahorros"> · ahorré {{ mio.ahorros | number:'1.0-0' }}</span>
         </p>
@@ -118,7 +118,7 @@
       </mat-card-header>
       <mat-card-content>
         <ng-container *ngIf="{ v: totalExpenses$ | async } as d">
-          <h2 *ngIf="d.v !== null; else cargandoMonto">{{ d.v | number:'1.0-0' }} Gs.</h2>
+          <h2 *ngIf="d.v !== null; else cargandoMonto" [appContador]="d.v"></h2>
         </ng-container>
         <p class="pendiente-line" *ngIf="(totalPending$ | async) as pendiente">
           <mat-icon>schedule</mat-icon>
@@ -137,7 +137,7 @@
       </mat-card-header>
       <mat-card-content>
         <ng-container *ngIf="{ v: totalIncome$ | async } as d">
-          <h2 *ngIf="d.v !== null; else cargandoMonto">{{ d.v | number:'1.0-0' }} Gs.</h2>
+          <h2 *ngIf="d.v !== null; else cargandoMonto" [appContador]="d.v"></h2>
         </ng-container>
         <p class="last-record" *ngIf="(lastDates$ | async) as dates">
           Último registro: {{ dates.lastIngreso !== 'N/A' ? (dates.lastIngreso | date:'dd/MM/yyyy') : 'N/A' }}
@@ -152,7 +152,7 @@
       </mat-card-header>
       <mat-card-content>
         <ng-container *ngIf="{ v: totalSavings$ | async } as d">
-          <h2 *ngIf="d.v !== null; else cargandoMonto">{{ d.v | number:'1.0-0' }} Gs.</h2>
+          <h2 *ngIf="d.v !== null; else cargandoMonto" [appContador]="d.v"></h2>
         </ng-container>
         <p class="last-record">
           Acumulado en contenedor

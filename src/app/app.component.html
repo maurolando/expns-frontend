@@ -17,10 +17,6 @@
         <mat-icon>account_circle</mat-icon>
         <span>{{user.nombre | uppercase}}</span>
       </div>
-      <button mat-icon-button (click)="logout()" matTooltip="Cerrar Sesión" class="logout-btn">
-        <mat-icon>logout</mat-icon>
-      </button>
-
       <!-- #56: acá estaba "Reiniciar Datos"; lo veía cualquier persona del hogar y borraba todo. -->
       <ng-container *ngIf="instalableEnIos">
         <button mat-icon-button [matMenuTriggerFor]="masMenu" matTooltip="Más opciones">
@@ -73,6 +69,14 @@
         <a mat-list-item routerLink="/compras" routerLinkActive="active-link">
           <mat-icon style="margin-right: 8px;">shopping_cart</mat-icon>
           <span>Lista de Compras</span>
+        </a>
+      </mat-nav-list>
+
+      <!-- #85: al pie, apartado del resto para no tocarlo sin querer. -->
+      <mat-nav-list class="sidenav-footer">
+        <a mat-list-item (click)="logout()" class="logout-item">
+          <mat-icon style="margin-right: 8px;">logout</mat-icon>
+          <span>Cerrar sesión</span>
         </a>
       </mat-nav-list>
     </mat-sidenav>

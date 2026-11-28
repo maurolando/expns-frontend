@@ -9,6 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { IngresoFormComponent } from '../ingreso-form/ingreso-form.component';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { NotificationService } from 'src/app/services/notification/notification.service';
+import { AhorroService } from 'src/app/services/ahorro/ahorro.service';
 
 export interface Billetera { forma: string; entro: number; salio: number; saldo: number; }
 interface Movimiento { personaId?: string; fecha?: string; formaPago?: string; monto: number; }
@@ -20,8 +21,12 @@ export function salidasDe(gastos: Gasto[]): Movimiento[] {
     : g.pagado ? [{ personaId: g.persona?.id, fecha: g.date, formaPago: g.formaPago, monto: g.amount }] : []);
 }
 
-/** #82: cuánto queda en cada billetera = lo que entró por ahí menos lo que se pagó por ahí. */
+// Convenio se descuenta del sueldo: no sale de ninguna billetera.
+const NO_ES_BILLETERA = ['Convenio'];
+
+/** #82: cuánto queda en cada billetera = lo que entró por ahí menos lo que se pagó o se ahorró desde ahí. */
 export function saldoPorBilletera(entradas: Movimiento[], salidas: Movimiento[]): Billetera[] {
+  salidas = salidas.filter(m => !NO_ES_BILLETERA.includes(m.formaPago ?? ''));
   const b = new Map<string, Billetera>();
   const de = (forma?: string) => {
     const k = forma || 'Sin definir';
@@ -71,6 +76,7 @@ export class IngresoListComponent implements OnInit, OnDestroy {
     private service: IngresoService, 
     private personaService: PersonaService,
     private expenseService: ExpenseService,
+    private ahorroService: AhorroService,
     private dialog: MatDialog,
     private notify: NotificationService
   ) {}
@@ -117,13 +123,15 @@ export class IngresoListComponent implements OnInit, OnDestroy {
     this.billeteras$ = combineLatest([
       this.service.getIngresos(),
       this.expenseService.getGastos(),
+      this.ahorroService.getAhorros(),
       filterChanges$
     ]).pipe(
       takeUntil(this.destroy$),
-      map(([ingresos, gastos, [persona, , desde, hasta]]) => {
+      map(([ingresos, gastos, ahorros, [persona, , desde, hasta]]) => {
         const pasa = (m: Movimiento) => (!persona || m.personaId === persona) && enRango(m.fecha, desde, hasta);
         const entradas = ingresos.map(i => ({ personaId: i.persona?.id, fecha: i.fecha, formaPago: i.formaPago, monto: i.monto }));
-        return saldoPorBilletera(entradas.filter(pasa), salidasDe(gastos).filter(pasa));
+        const ahorrado = ahorros.map(a => ({ personaId: a.persona?.id, fecha: a.fecha, formaPago: a.formaPago, monto: a.monto }));
+        return saldoPorBilletera(entradas.filter(pasa), [...salidasDe(gastos), ...ahorrado].filter(pasa));
       })
     );
   }

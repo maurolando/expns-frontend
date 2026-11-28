@@ -21,24 +21,26 @@ describe('IngresoListComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('saldo por billetera: entra lo ingresado, sale lo pagado y cada pago de un compartido', () => {
+  it('saldo por billetera: entra lo ingresado; sale lo pagado, cada pago de un compartido y lo ahorrado; Convenio no cuenta', () => {
     const gastos = [
       { amount: 300, pagado: true, formaPago: 'Efectivo', date: '2026-11-02' },
       { amount: 999, pagado: false, formaPago: 'Efectivo', date: '2026-11-02' },
       { amount: 500, esCompartido: true, pagado: false, date: '2026-11-03', pagosCompartidos: [
         { persona: { id: '1' }, monto: 200, formaPago: 'Transferencia' },
         { persona: { id: '2' }, monto: 100, formaPago: 'Tarjeta de Crédito' }
-      ] }
+      ] },
+      { amount: 700, pagado: true, formaPago: 'Convenio', date: '2026-11-04' }
     ] as unknown as Gasto[];
 
     const b = saldoPorBilletera(
       [{ formaPago: 'Efectivo', monto: 1000 }, { formaPago: 'Transferencia', monto: 500 }, { monto: 50 }],
-      salidasDe(gastos));
+      [...salidasDe(gastos), { formaPago: 'Transferencia', monto: 50 }]);
 
     const por = (f: string) => b.find(x => x.forma === f);
     expect(por('Efectivo')).toEqual({ forma: 'Efectivo', entro: 1000, salio: 300, saldo: 700 });
-    expect(por('Transferencia')?.saldo).toBe(300);
+    expect(por('Transferencia')?.saldo).toBe(250);
     expect(por('Tarjeta de Crédito')?.saldo).toBe(-100);
     expect(por('Sin definir')?.saldo).toBe(50);
+    expect(por('Convenio')).toBeUndefined();
   });
 });

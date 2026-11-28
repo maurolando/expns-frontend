@@ -62,6 +62,7 @@ export class AhorrosComponent implements OnInit, OnDestroy {
       monto: ['', [Validators.required, Validators.min(0.01)]],
       fecha: [new Date(), Validators.required],
       personaId: [''],
+      formaPago: ['Efectivo', Validators.required],
       descripcion: ['']
     });
   }
@@ -131,7 +132,7 @@ export class AhorrosComponent implements OnInit, OnDestroy {
       const v = this.savingForm.value;
       const formattedDate = toLocalISODate(v.fecha);
       
-      this.ahorroService.createAhorro(v.monto, formattedDate, v.personaId || null, v.descripcion || '')
+      this.ahorroService.createAhorro(v.monto, formattedDate, v.personaId || null, v.descripcion || '', v.formaPago)
         .subscribe({
           next: () => {
             this.notify.success('Ahorro cargado con éxito');

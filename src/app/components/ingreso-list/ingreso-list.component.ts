@@ -18,8 +18,9 @@ import { NotificationService } from 'src/app/services/notification/notification.
 export class IngresoListComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
-  displayedColumns: string[] = ['fecha', 'persona', 'tipo', 'monto'];
+  displayedColumns: string[] = ['fecha', 'persona', 'tipo', 'formaPago', 'monto'];
   ingresos$!: Observable<Ingreso[]>;
+  porForma$!: Observable<{ forma: string; total: number }[]>;
   personas$!: Observable<Persona[]>;
   categorias$!: Observable<Categoria[]>;
 
@@ -95,6 +96,16 @@ export class IngresoListComponent implements OnInit, OnDestroy {
         });
       })
     );
+
+    // #82: cuánto entró por cada vía, sobre lo que se ve con los filtros puestos.
+    this.porForma$ = this.ingresos$.pipe(map(ingresos => {
+      const totales = new Map<string, number>();
+      ingresos.forEach(i => {
+        const forma = i.formaPago || 'Sin definir';
+        totales.set(forma, (totales.get(forma) ?? 0) + i.monto);
+      });
+      return [...totales].map(([forma, total]) => ({ forma, total }));
+    }));
   }
 
   clearFilters() {

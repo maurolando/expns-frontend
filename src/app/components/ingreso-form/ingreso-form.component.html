@@ -26,6 +26,17 @@
       <mat-icon matPrefix>person</mat-icon>
     </mat-form-field>
 
+    <!-- #82: por dónde entra la plata; mismos valores que la forma de pago del gasto. -->
+    <mat-form-field appearance="outline">
+      <mat-label>Ingresa por</mat-label>
+      <mat-select formControlName="formaPago">
+        <mat-option value="Efectivo">Efectivo</mat-option>
+        <mat-option value="Tarjeta de Débito">Tarjeta de Débito</mat-option>
+        <mat-option value="Transferencia">Transferencia</mat-option>
+      </mat-select>
+      <mat-icon matPrefix>account_balance_wallet</mat-icon>
+    </mat-form-field>
+
     <mat-form-field appearance="outline">
       <mat-label>Fecha</mat-label>
       <input matInput [matDatepicker]="picker" formControlName="fecha">

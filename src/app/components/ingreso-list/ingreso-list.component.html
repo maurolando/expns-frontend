@@ -56,6 +56,13 @@
     </button>
   </div>
 
+  <div class="por-forma" *ngIf="(porForma$ | async) as formas">
+    <div class="forma-chip" *ngFor="let f of formas">
+      <span class="forma-nombre">{{ f.forma }}</span>
+      <strong>{{ f.total | number:'1.0-0' }} Gs.</strong>
+    </div>
+  </div>
+
   <table mat-table [dataSource]="(ingresos$ | async) || []" class="ingresos-table">
 
     <ng-container matColumnDef="fecha">
@@ -81,6 +88,11 @@
           <span>{{element.categoria?.nombre || 'SIN CATEGORÍA' | uppercase }}</span>
         </div>
       </td>
+    </ng-container>
+
+    <ng-container matColumnDef="formaPago">
+      <th mat-header-cell *matHeaderCellDef> Ingresa por </th>
+      <td mat-cell *matCellDef="let element"> {{ element.formaPago || '—' }} </td>
     </ng-container>
 
     <ng-container matColumnDef="monto">

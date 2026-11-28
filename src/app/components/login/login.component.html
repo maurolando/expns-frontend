@@ -59,7 +59,7 @@
 
       <button mat-raised-button color="primary" type="submit"
               [disabled]="form.invalid || loading" class="login-btn">
-        <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+        <mat-spinner diameter="20" *ngIf="loading" class="spinner-boton"></mat-spinner>
         <mat-icon *ngIf="!loading">{{registrando ? 'person_add' : 'login'}}</mat-icon>
         <span>{{loading ? 'Verificando...' : (registrando ? 'Crear cuenta' : 'Ingresar')}}</span>
       </button>

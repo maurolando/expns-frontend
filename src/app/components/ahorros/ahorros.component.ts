@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, TemplateRef, ViewChild } from '@angular/c
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable, combineLatest, Subject } from 'rxjs';
-import { map, startWith, switchMap, takeUntil } from 'rxjs/operators';
+import { finalize, map, startWith, switchMap, takeUntil } from 'rxjs/operators';
 import { ExpenseService } from 'src/app/services/expense/expense.service';
 import { IngresoService } from 'src/app/services/ingreso/ingreso.service';
 import { AhorroService, Ahorro } from 'src/app/services/ahorro/ahorro.service';
@@ -47,6 +47,7 @@ export class AhorrosComponent implements OnInit, OnDestroy {
 
   @ViewChild('cargaAhorro') cargaAhorroTpl!: TemplateRef<unknown>;
   private cargaRef?: MatDialogRef<unknown>;
+  guardando = false;
 
   constructor(
     private fb: FormBuilder,
@@ -131,7 +132,9 @@ export class AhorrosComponent implements OnInit, OnDestroy {
       const v = this.savingForm.value;
       const formattedDate = toLocalISODate(v.fecha);
       
+      this.guardando = true;
       this.ahorroService.createAhorro(v.monto, formattedDate, v.personaId || null, v.descripcion || '')
+        .pipe(finalize(() => this.guardando = false))
         .subscribe({
           next: () => {
             this.notify.success('Ahorro cargado con éxito');

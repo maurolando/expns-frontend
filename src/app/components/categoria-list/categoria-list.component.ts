@@ -31,14 +31,7 @@ export class CategoriaListComponent implements OnInit {
 
   openForm() {
     const dialogRef = this.dialog.open(CategoriaFormComponent, { width: '400px' });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.expenseService.createCategoria(result).subscribe(() => {
-          this.refresh();
-          this.notify.success('Categoría creada con éxito');
-        });
-      }
-    });
+    dialogRef.afterClosed().subscribe(guardada => { if (guardada) this.refresh(); });
   }
 
   editCat(cat: Categoria) {
@@ -46,14 +39,7 @@ export class CategoriaListComponent implements OnInit {
       width: '400px',
       data: cat
     });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.expenseService.updateCategoria(cat.id, result).subscribe(() => {
-          this.refresh();
-          this.notify.success('Categoría actualizada');
-        });
-      }
-    });
+    dialogRef.afterClosed().subscribe(guardada => { if (guardada) this.refresh(); });
   }
 
   deleteCat(id: string) {

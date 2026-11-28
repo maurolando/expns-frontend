@@ -20,7 +20,8 @@
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-button mat-dialog-close>Cancelar</button>
-  <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="save()">
-    {{ isEdit ? 'Actualizar' : 'Crear Persona' }}
+  <button mat-raised-button color="primary" [disabled]="form.invalid || guardando" (click)="save()">
+    <mat-spinner *ngIf="guardando" diameter="18" class="spinner-boton"></mat-spinner>
+    {{ guardando ? 'Guardando...' : (isEdit ? 'Actualizar' : 'Crear Persona') }}
   </button>
 </mat-dialog-actions>

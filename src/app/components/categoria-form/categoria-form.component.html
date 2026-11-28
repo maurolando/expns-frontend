@@ -44,5 +44,8 @@
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-button (click)="onCancel()">Cancelar</button>
-  <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="onSave()">Guardar</button>
+  <button mat-raised-button color="primary" [disabled]="form.invalid || guardando" (click)="onSave()">
+    <mat-spinner *ngIf="guardando" diameter="18" class="spinner-boton"></mat-spinner>
+    {{ guardando ? 'Guardando...' : 'Guardar' }}
+  </button>
 </mat-dialog-actions>

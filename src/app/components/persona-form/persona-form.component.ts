@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { PersonaService, Persona } from 'src/app/services/persona/persona.service';
 import { NotificationService } from 'src/app/services/notification/notification.service';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-persona-form',
@@ -36,18 +37,30 @@ export class PersonaFormComponent implements OnInit {
     }
   }
 
+  guardando = false;
+
   save() {
     if (this.form.valid) {
       if (this.isEdit && this.data.id) {
-        this.service.updatePersona(this.data.id, this.form.value.nombre, this.form.value.activo).subscribe(() => {
-          this.notify.success('Persona actualizada correctamente');
-          this.dialogRef.close(true);
-        });
+        this.guardando = true;
+        this.service.updatePersona(this.data.id, this.form.value.nombre, this.form.value.activo)
+          .pipe(finalize(() => this.guardando = false)).subscribe({
+            next: () => {
+              this.notify.success('Persona actualizada correctamente');
+              this.dialogRef.close(true);
+            },
+            error: () => this.notify.error('No se pudo actualizar la persona')
+          });
       } else {
-        this.service.createPersona(this.form.value.nombre).subscribe(() => {
-          this.notify.success('Persona creada con éxito');
-          this.dialogRef.close(true);
-        });
+        this.guardando = true;
+        this.service.createPersona(this.form.value.nombre)
+          .pipe(finalize(() => this.guardando = false)).subscribe({
+            next: () => {
+              this.notify.success('Persona creada con éxito');
+              this.dialogRef.close(true);
+            },
+            error: () => this.notify.error('No se pudo crear la persona')
+          });
       }
     }
   }

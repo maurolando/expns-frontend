@@ -39,6 +39,7 @@ export class IngresoFormComponent implements OnInit {
       fecha: [new Date(), Validators.required],
       categoriaId: ['', Validators.required],
       personaId: ['', Validators.required],
+      formaPago: ['Efectivo', Validators.required],
       recurrent: [false]
     });
   }
@@ -54,6 +55,8 @@ export class IngresoFormComponent implements OnInit {
         fecha: fromLocalISODate(this.ingreso.fecha),
         categoriaId: this.ingreso.categoria?.id,
         personaId: this.ingreso.persona?.id,
+        // Los cargados antes de #82 no tienen; quedan en Efectivo hasta que alguien lo cambie.
+        formaPago: this.ingreso.formaPago || 'Efectivo',
         recurrent: !!this.ingreso.recurrent
       });
     }
@@ -66,8 +69,8 @@ export class IngresoFormComponent implements OnInit {
     const fecha = toLocalISODate(v.fecha);
 
     const peticion = this.editando
-      ? this.service.updateIngreso(this.ingreso!.id!, v.monto, fecha, v.categoriaId, v.personaId, v.recurrent)
-      : this.service.createIngreso(v.monto, fecha, v.categoriaId, v.personaId, v.recurrent);
+      ? this.service.updateIngreso(this.ingreso!.id!, v.monto, fecha, v.categoriaId, v.personaId, v.recurrent, v.formaPago)
+      : this.service.createIngreso(v.monto, fecha, v.categoriaId, v.personaId, v.recurrent, v.formaPago);
 
     this.guardando = true;
     peticion.pipe(finalize(() => this.guardando = false)).subscribe({

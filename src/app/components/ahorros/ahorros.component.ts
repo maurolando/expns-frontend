@@ -8,7 +8,7 @@ import { IngresoService } from 'src/app/services/ingreso/ingreso.service';
 import { AhorroService, Ahorro } from 'src/app/services/ahorro/ahorro.service';
 import { PersonaService, Persona } from 'src/app/services/persona/persona.service';
 import { NotificationService } from 'src/app/services/notification/notification.service';
-import { periodoDe, toLocalISODate } from 'src/app/utils/date.util';
+import { fromLocalISODate, periodoDe, toLocalISODate } from 'src/app/utils/date.util';
 import { HogarService } from 'src/app/services/hogar/hogar.service';
 
 const SAVINGS_GOAL_KEY = 'app_gastos_savings_goal';
@@ -48,6 +48,8 @@ export class AhorrosComponent implements OnInit, OnDestroy {
   @ViewChild('cargaAhorro') cargaAhorroTpl!: TemplateRef<unknown>;
   private cargaRef?: MatDialogRef<unknown>;
   guardando = false;
+  /** Con id, el diálogo de carga edita ese ahorro en vez de crear uno. */
+  editandoId: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -63,6 +65,7 @@ export class AhorrosComponent implements OnInit, OnDestroy {
       monto: ['', [Validators.required, Validators.min(0.01)]],
       fecha: [new Date(), Validators.required],
       personaId: [''],
+      formaPago: ['Efectivo', Validators.required],
       descripcion: ['']
     });
   }
@@ -125,6 +128,26 @@ export class AhorrosComponent implements OnInit, OnDestroy {
 
   abrirCargaAhorro() {
     this.cargaRef = this.dialog.open(this.cargaAhorroTpl, { width: '440px' });
+    // Al cerrar, de cualquier forma, el próximo "Cargar" arranca en blanco.
+    this.cargaRef.afterClosed().subscribe(() => {
+      if (this.editandoId) {
+        this.editandoId = null;
+        this.savingForm.reset({ monto: '', fecha: new Date(), personaId: '', formaPago: 'Efectivo', descripcion: '' });
+      }
+    });
+  }
+
+  /** #82: sobre todo para asignarles billetera a los ahorros cargados antes de que existiera. */
+  editarAhorro(a: Ahorro) {
+    this.editandoId = a.id!;
+    this.savingForm.reset({
+      monto: a.monto,
+      fecha: fromLocalISODate(a.fecha),
+      personaId: a.persona?.id ?? '',
+      formaPago: a.formaPago || 'Efectivo',
+      descripcion: a.descripcion ?? ''
+    });
+    this.abrirCargaAhorro();
   }
 
   cargarAhorro() {
@@ -132,12 +155,17 @@ export class AhorrosComponent implements OnInit, OnDestroy {
       const v = this.savingForm.value;
       const formattedDate = toLocalISODate(v.fecha);
       
+      const peticion = this.editandoId
+        // En la edición, persona vacía va como undefined: el backend deja la que tenía.
+        ? this.ahorroService.updateAhorro(this.editandoId, v.monto, formattedDate, v.personaId || undefined, v.descripcion ?? '', v.formaPago)
+        : this.ahorroService.createAhorro(v.monto, formattedDate, v.personaId || null, v.descripcion || '', v.formaPago);
+      const editando = !!this.editandoId;
       this.guardando = true;
-      this.ahorroService.createAhorro(v.monto, formattedDate, v.personaId || null, v.descripcion || '')
+      peticion
         .pipe(finalize(() => this.guardando = false))
         .subscribe({
           next: () => {
-            this.notify.success('Ahorro cargado con éxito');
+            this.notify.success(editando ? 'Ahorro actualizado' : 'Ahorro cargado con éxito');
             this.savingForm.patchValue({
               monto: '',
               descripcion: '',
@@ -149,8 +177,8 @@ export class AhorrosComponent implements OnInit, OnDestroy {
             this.cargaRef?.close();
           },
           error: (err) => {
-            console.error('Error al cargar ahorro:', err);
-            this.notify.error('Error al registrar el ahorro');
+            console.error('Error al guardar ahorro:', err);
+            this.notify.error(editando ? 'No se pudo actualizar el ahorro' : 'Error al registrar el ahorro');
           }
         });
     } else {

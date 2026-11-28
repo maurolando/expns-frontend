@@ -9,6 +9,7 @@ export interface Ahorro {
   fecha: string;
   descripcion?: string;
   persona?: Persona;
+  formaPago?: string;
 }
 
 const GET_AHORROS = gql`
@@ -18,6 +19,7 @@ const GET_AHORROS = gql`
       monto
       fecha
       descripcion
+      formaPago
       persona {
         id
         nombre
@@ -27,12 +29,29 @@ const GET_AHORROS = gql`
 `;
 
 const CREATE_AHORRO = gql`
-  mutation CreateAhorro($monto: Float!, $fecha: String!, $personaId: ID, $descripcion: String) {
-    createAhorro(monto: $monto, fecha: $fecha, personaId: $personaId, descripcion: $descripcion) {
+  mutation CreateAhorro($monto: Float!, $fecha: String!, $personaId: ID, $descripcion: String, $formaPago: String) {
+    createAhorro(monto: $monto, fecha: $fecha, personaId: $personaId, descripcion: $descripcion, formaPago: $formaPago) {
       id
       monto
       fecha
       descripcion
+      formaPago
+      persona {
+        id
+        nombre
+      }
+    }
+  }
+`;
+
+const UPDATE_AHORRO = gql`
+  mutation UpdateAhorro($id: ID!, $monto: Float, $fecha: String, $personaId: ID, $descripcion: String, $formaPago: String) {
+    updateAhorro(id: $id, monto: $monto, fecha: $fecha, personaId: $personaId, descripcion: $descripcion, formaPago: $formaPago) {
+      id
+      monto
+      fecha
+      descripcion
+      formaPago
       persona {
         id
         nombre
@@ -64,10 +83,10 @@ export class AhorroService {
     );
   }
 
-  createAhorro(monto: number, fecha: string, personaId?: string, descripcion?: string): Observable<Ahorro> {
+  createAhorro(monto: number, fecha: string, personaId?: string, descripcion?: string, formaPago?: string): Observable<Ahorro> {
     return this.apollo.mutate<any>({
       mutation: CREATE_AHORRO,
-      variables: { monto, fecha, personaId, descripcion },
+      variables: { monto, fecha, personaId, descripcion, formaPago },
       refetchQueries: [
         'GetAllAhorros',
         'GetGlobalBalance',
@@ -77,6 +96,17 @@ export class AhorroService {
       ]
     }).pipe(
       map(result => result.data.createAhorro)
+    );
+  }
+
+  /** Edicion parcial: lo que no se manda (o va en null) el backend lo deja como estaba. */
+  updateAhorro(id: string, monto: number, fecha: string, personaId?: string, descripcion?: string, formaPago?: string): Observable<Ahorro> {
+    return this.apollo.mutate<any>({
+      mutation: UPDATE_AHORRO,
+      variables: { id, monto, fecha, personaId, descripcion, formaPago },
+      refetchQueries: ['GetAllAhorros', 'GetGlobalBalance', 'GetLastDates', 'GetAllIngresos', 'GetDistribucionRegla']
+    }).pipe(
+      map(result => result.data.updateAhorro)
     );
   }
 

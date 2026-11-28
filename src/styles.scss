@@ -326,6 +326,15 @@ textarea[matInput]:not(.sin-mayusculas) {
   -webkit-backdrop-filter: blur(8px) saturate(140%);
 }
 
+// #84: todos los botones con texto en cápsula, también los de los diálogos,
+// que traían el borde casi recto de Material.
+.mat-mdc-button,
+.mat-mdc-unelevated-button,
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button {
+  border-radius: 999px !important;
+}
+
 // Botón principal de cada ventana ("Nuevo …"): cápsula magenta-coral.
 // Texto oscuro: blanco sobre estos tonos no llega al contraste mínimo.
 .mat-mdc-unelevated-button.mat-accent:not(:disabled) {

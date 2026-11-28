@@ -98,6 +98,19 @@
       </mat-card-content>
     </mat-card>
 
+    <mat-card class="stat-card personal mat-elevation-z3" *ngIf="miSaldo$ | async as mio">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>person</mat-icon>
+        <mat-card-title>Mi saldo</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <h2>{{ mio.saldo | number:'1.0-0' }} Gs.</h2>
+        <p class="last-record">
+          Ingresé {{ mio.ingresos | number:'1.0-0' }} · gasté {{ mio.gastos | number:'1.0-0' }}<span *ngIf="mio.ahorros"> · ahorré {{ mio.ahorros | number:'1.0-0' }}</span>
+        </p>
+      </mat-card-content>
+    </mat-card>
+
     <mat-card class="stat-card total mat-elevation-z3">
       <mat-card-header>
         <mat-icon mat-card-avatar>account_balance_wallet</mat-icon>

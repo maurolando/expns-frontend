@@ -147,6 +147,11 @@
               <td mat-cell *matCellDef="let element"> {{element.descripcion || 'Sin descripción'}} </td>
             </ng-container>
 
+            <ng-container matColumnDef="formaPago">
+              <th mat-header-cell *matHeaderCellDef> Sale de </th>
+              <td mat-cell *matCellDef="let element"> {{element.formaPago || 'Sin definir'}} </td>
+            </ng-container>
+
             <ng-container matColumnDef="monto">
               <th mat-header-cell *matHeaderCellDef> Monto </th>
               <td mat-cell *matCellDef="let element" class="monto-cell" style="font-weight: 700; color: var(--violet-light);"> {{element.monto | number:'1.0-0'}} Gs. </td>
@@ -155,14 +160,17 @@
             <ng-container matColumnDef="acciones">
               <th mat-header-cell *matHeaderCellDef> </th>
               <td mat-cell *matCellDef="let element">
+                <button mat-icon-button (click)="editarAhorro(element)" matTooltip="Editar" aria-label="Editar ahorro">
+                  <mat-icon>edit</mat-icon>
+                </button>
                 <button mat-icon-button color="warn" (click)="eliminarAhorro(element.id)" matTooltip="Eliminar Registro">
                   <mat-icon>delete</mat-icon>
                 </button>
               </td>
             </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="['fecha', 'persona', 'descripcion', 'monto', 'acciones']"></tr>
-            <tr mat-row *matRowDef="let row; columns: ['fecha', 'persona', 'descripcion', 'monto', 'acciones'];"></tr>
+            <tr mat-header-row *matHeaderRowDef="['fecha', 'persona', 'descripcion', 'formaPago', 'monto', 'acciones']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['fecha', 'persona', 'descripcion', 'formaPago', 'monto', 'acciones'];"></tr>
           </table>
         </div>
       </mat-card-content>
@@ -172,7 +180,7 @@
 
 <!-- Issue #38: el formulario salió de la ventana a un diálogo, como en Gastos e Ingresos. -->
 <ng-template #cargaAhorro>
-  <h2 mat-dialog-title>Cargar ahorro</h2>
+  <h2 mat-dialog-title>{{ editandoId ? 'Editar ahorro' : 'Cargar ahorro' }}</h2>
   <mat-dialog-content>
     <form [formGroup]="savingForm" (ngSubmit)="cargarAhorro()" class="saving-form">
       <div class="form-row">
@@ -202,6 +210,18 @@
         </mat-form-field>
       </div>
 
+      <!-- #82: el ahorro descuenta de esta billetera en Ingresos. -->
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Sale de</mat-label>
+          <mat-select formControlName="formaPago">
+            <mat-option value="Efectivo">Efectivo</mat-option>
+            <mat-option value="Tarjeta de Débito">Tarjeta de Débito</mat-option>
+            <mat-option value="Transferencia">Transferencia</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
       <div class="form-row">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Descripción (Opcional)</mat-label>
@@ -211,7 +231,7 @@
 
       <button mat-flat-button color="primary" type="submit" [disabled]="savingForm.invalid || guardando" class="submit-btn">
         <mat-spinner *ngIf="guardando" diameter="18" class="spinner-boton"></mat-spinner>
-        <mat-icon *ngIf="!guardando">save</mat-icon> {{ guardando ? 'Guardando...' : 'Registrar Ahorro' }}
+        <mat-icon *ngIf="!guardando">save</mat-icon> {{ guardando ? 'Guardando...' : (editandoId ? 'Guardar cambios' : 'Registrar Ahorro') }}
       </button>
     </form>
   </mat-dialog-content>

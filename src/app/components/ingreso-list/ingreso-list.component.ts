@@ -2,13 +2,50 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { IngresoService, Ingreso } from 'src/app/services/ingreso/ingreso.service';
 import { PersonaService, Persona } from 'src/app/services/persona/persona.service';
-import { ExpenseService, Categoria } from 'src/app/services/expense/expense.service';
+import { ExpenseService, Categoria, Gasto } from 'src/app/services/expense/expense.service';
 import { Observable, combineLatest, Subject } from 'rxjs';
 import { map, startWith, takeUntil } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { IngresoFormComponent } from '../ingreso-form/ingreso-form.component';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { NotificationService } from 'src/app/services/notification/notification.service';
+import { AhorroService } from 'src/app/services/ahorro/ahorro.service';
+
+export interface Billetera { forma: string; entro: number; salio: number; saldo: number; }
+interface Movimiento { personaId?: string; fecha?: string; formaPago?: string; monto: number; }
+
+/** La plata que salió de verdad: lo pagado de un gasto común, y cada pago de uno compartido. */
+export function salidasDe(gastos: Gasto[]): Movimiento[] {
+  return gastos.flatMap(g => g.esCompartido
+    ? (g.pagosCompartidos ?? []).map(p => ({ personaId: p.persona?.id, fecha: p.fecha ?? g.date, formaPago: p.formaPago, monto: p.monto }))
+    : g.pagado ? [{ personaId: g.persona?.id, fecha: g.date, formaPago: g.formaPago, monto: g.amount }] : []);
+}
+
+// Convenio se descuenta del sueldo: no sale de ninguna billetera.
+const NO_ES_BILLETERA = ['Convenio'];
+
+/** #82: cuánto queda en cada billetera = lo que entró por ahí menos lo que se pagó o se ahorró desde ahí. */
+export function saldoPorBilletera(entradas: Movimiento[], salidas: Movimiento[]): Billetera[] {
+  salidas = salidas.filter(m => !NO_ES_BILLETERA.includes(m.formaPago ?? ''));
+  const b = new Map<string, Billetera>();
+  const de = (forma?: string) => {
+    const k = forma || 'Sin definir';
+    if (!b.has(k)) b.set(k, { forma: k, entro: 0, salio: 0, saldo: 0 });
+    return b.get(k)!;
+  };
+  entradas.forEach(m => { const x = de(m.formaPago); x.entro += m.monto; x.saldo += m.monto; });
+  salidas.forEach(m => { const x = de(m.formaPago); x.salio += m.monto; x.saldo -= m.monto; });
+  return [...b.values()];
+}
+
+function enRango(fecha: string | undefined, desde: Date | null, hasta: Date | null): boolean {
+  if (!fecha) return true;
+  const d = new Date(fecha);
+  d.setHours(0, 0, 0, 0);
+  if (desde && d < new Date(new Date(desde).setHours(0, 0, 0, 0))) return false;
+  if (hasta && d > new Date(new Date(hasta).setHours(0, 0, 0, 0))) return false;
+  return true;
+}
 
 @Component({
   selector: 'app-ingreso-list',
@@ -18,8 +55,9 @@ import { NotificationService } from 'src/app/services/notification/notification.
 export class IngresoListComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
-  displayedColumns: string[] = ['fecha', 'persona', 'tipo', 'monto'];
+  displayedColumns: string[] = ['fecha', 'persona', 'tipo', 'formaPago', 'monto'];
   ingresos$!: Observable<Ingreso[]>;
+  billeteras$!: Observable<Billetera[]>;
   personas$!: Observable<Persona[]>;
   categorias$!: Observable<Categoria[]>;
 
@@ -38,6 +76,7 @@ export class IngresoListComponent implements OnInit, OnDestroy {
     private service: IngresoService, 
     private personaService: PersonaService,
     private expenseService: ExpenseService,
+    private ahorroService: AhorroService,
     private dialog: MatDialog,
     private notify: NotificationService
   ) {}
@@ -75,24 +114,24 @@ export class IngresoListComponent implements OnInit, OnDestroy {
           }
 
           // 3. Filtrar por rango de fechas
-          if (i.fecha) {
-            const iDate = new Date(i.fecha);
-            iDate.setHours(0, 0, 0, 0);
-
-            if (fechaInicio) {
-              const start = new Date(fechaInicio);
-              start.setHours(0, 0, 0, 0);
-              if (iDate < start) return false;
-            }
-
-            if (fechaFin) {
-              const end = new Date(fechaFin);
-              end.setHours(0, 0, 0, 0);
-              if (iDate > end) return false;
-            }
-          }
-          return true;
+          return enRango(i.fecha, fechaInicio, fechaFin);
         });
+      })
+    );
+
+    // #82: con los filtros de persona y fecha; el de categoría es de ingresos y no aplica a lo gastado.
+    this.billeteras$ = combineLatest([
+      this.service.getIngresos(),
+      this.expenseService.getGastos(),
+      this.ahorroService.getAhorros(),
+      filterChanges$
+    ]).pipe(
+      takeUntil(this.destroy$),
+      map(([ingresos, gastos, ahorros, [persona, , desde, hasta]]) => {
+        const pasa = (m: Movimiento) => (!persona || m.personaId === persona) && enRango(m.fecha, desde, hasta);
+        const entradas = ingresos.map(i => ({ personaId: i.persona?.id, fecha: i.fecha, formaPago: i.formaPago, monto: i.monto }));
+        const ahorrado = ahorros.map(a => ({ personaId: a.persona?.id, fecha: a.fecha, formaPago: a.formaPago, monto: a.monto }));
+        return saldoPorBilletera(entradas.filter(pasa), [...salidasDe(gastos), ...ahorrado].filter(pasa));
       })
     );
   }

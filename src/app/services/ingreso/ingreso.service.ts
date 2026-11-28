@@ -11,6 +11,7 @@ export interface Ingreso {
   categoria: Categoria;
   recurrent?: boolean;
   persona: Persona;
+  formaPago?: string;
 }
 
 const GET_INGRESOS = gql`
@@ -25,6 +26,7 @@ const GET_INGRESOS = gql`
         icono
       }
       recurrent
+      formaPago
       persona {
         id
         nombre
@@ -34,8 +36,8 @@ const GET_INGRESOS = gql`
 `;
 
 const CREATE_INGRESO = gql`
-  mutation CreateIngreso($monto: Float!, $fecha: String!, $categoriaId: ID!, $personaId: ID!, $recurrent: Boolean) {
-    createIngreso(monto: $monto, fecha: $fecha, categoriaId: $categoriaId, personaId: $personaId, recurrent: $recurrent) {
+  mutation CreateIngreso($monto: Float!, $fecha: String!, $categoriaId: ID!, $personaId: ID!, $recurrent: Boolean, $formaPago: String) {
+    createIngreso(monto: $monto, fecha: $fecha, categoriaId: $categoriaId, personaId: $personaId, recurrent: $recurrent, formaPago: $formaPago) {
       id
       monto
       fecha
@@ -45,6 +47,7 @@ const CREATE_INGRESO = gql`
         icono
       }
       recurrent
+      formaPago
       persona {
         id
         nombre
@@ -55,8 +58,8 @@ const CREATE_INGRESO = gql`
 
 
 const UPDATE_INGRESO = gql`
-  mutation UpdateIngreso($id: ID!, $monto: Float, $fecha: String, $categoriaId: ID, $personaId: ID, $recurrent: Boolean) {
-    updateIngreso(id: $id, monto: $monto, fecha: $fecha, categoriaId: $categoriaId, personaId: $personaId, recurrent: $recurrent) {
+  mutation UpdateIngreso($id: ID!, $monto: Float, $fecha: String, $categoriaId: ID, $personaId: ID, $recurrent: Boolean, $formaPago: String) {
+    updateIngreso(id: $id, monto: $monto, fecha: $fecha, categoriaId: $categoriaId, personaId: $personaId, recurrent: $recurrent, formaPago: $formaPago) {
       id
       monto
       fecha
@@ -66,6 +69,7 @@ const UPDATE_INGRESO = gql`
         icono
       }
       recurrent
+      formaPago
       persona {
         id
         nombre
@@ -97,10 +101,10 @@ export class IngresoService {
     );
   }
 
-  createIngreso(monto: number, fecha: string, categoriaId: string, personaId: string, recurrent: boolean): Observable<Ingreso> {
+  createIngreso(monto: number, fecha: string, categoriaId: string, personaId: string, recurrent: boolean, formaPago: string): Observable<Ingreso> {
     return this.apollo.mutate<any>({
       mutation: CREATE_INGRESO,
-      variables: { monto, fecha, categoriaId, personaId, recurrent },
+      variables: { monto, fecha, categoriaId, personaId, recurrent, formaPago },
       refetchQueries: ['GetAllIngresos', 'GetGlobalBalance', 'GetLastDates', 'GetDistribucionRegla']
     }).pipe(
       map(result => result.data.createIngreso)
@@ -112,10 +116,10 @@ export class IngresoService {
    * mandan todos los campos del formulario porque el formulario los muestra
    * todos, pero la fecha en null significa "no la cambies", no "hoy".
    */
-  updateIngreso(id: string, monto: number, fecha: string, categoriaId: string, personaId: string, recurrent: boolean): Observable<Ingreso> {
+  updateIngreso(id: string, monto: number, fecha: string, categoriaId: string, personaId: string, recurrent: boolean, formaPago: string): Observable<Ingreso> {
     return this.apollo.mutate<any>({
       mutation: UPDATE_INGRESO,
-      variables: { id, monto, fecha, categoriaId, personaId, recurrent },
+      variables: { id, monto, fecha, categoriaId, personaId, recurrent, formaPago },
       refetchQueries: ['GetAllIngresos', 'GetGlobalBalance', 'GetLastDates', 'GetDistribucionRegla']
     }).pipe(
       map(result => result.data.updateIngreso)

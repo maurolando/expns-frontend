@@ -44,6 +44,22 @@ const CREATE_AHORRO = gql`
   }
 `;
 
+const UPDATE_AHORRO = gql`
+  mutation UpdateAhorro($id: ID!, $monto: Float, $fecha: String, $personaId: ID, $descripcion: String, $formaPago: String) {
+    updateAhorro(id: $id, monto: $monto, fecha: $fecha, personaId: $personaId, descripcion: $descripcion, formaPago: $formaPago) {
+      id
+      monto
+      fecha
+      descripcion
+      formaPago
+      persona {
+        id
+        nombre
+      }
+    }
+  }
+`;
+
 const DELETE_AHORRO = gql`
   mutation DeleteAhorro($id: ID!) {
     deleteAhorro(id: $id)
@@ -80,6 +96,17 @@ export class AhorroService {
       ]
     }).pipe(
       map(result => result.data.createAhorro)
+    );
+  }
+
+  /** Edicion parcial: lo que no se manda (o va en null) el backend lo deja como estaba. */
+  updateAhorro(id: string, monto: number, fecha: string, personaId?: string, descripcion?: string, formaPago?: string): Observable<Ahorro> {
+    return this.apollo.mutate<any>({
+      mutation: UPDATE_AHORRO,
+      variables: { id, monto, fecha, personaId, descripcion, formaPago },
+      refetchQueries: ['GetAllAhorros', 'GetGlobalBalance', 'GetLastDates', 'GetAllIngresos', 'GetDistribucionRegla']
+    }).pipe(
+      map(result => result.data.updateAhorro)
     );
   }
 

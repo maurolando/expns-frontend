@@ -61,6 +61,7 @@ import { AhorrosComponent } from './components/ahorros/ahorros.component';
 import { ShoppingListComponent } from './components/shopping-list/shopping-list.component';
 import { CuotasDialogComponent } from './components/cuotas-dialog/cuotas-dialog.component';
 import { MilesDirective } from './directives/miles.directive';
+import { ContadorDirective } from './directives/contador.directive';
 import { BudgetDialogComponent } from './components/budget-dialog/budget-dialog.component';
 import { AjusteBalanceDialogComponent } from './components/ajuste-balance-dialog/ajuste-balance-dialog.component';
 import { ReglaPresupuestoCardComponent } from './components/regla-presupuesto-card/regla-presupuesto-card.component';
@@ -111,6 +112,7 @@ import { SkeletonComponent } from './components/skeleton/skeleton.component';
     ShoppingListComponent,
     CuotasDialogComponent,
     MilesDirective,
+    ContadorDirective,
     BudgetDialogComponent,
     AjusteBalanceDialogComponent,
     ReglaPresupuestoCardComponent,

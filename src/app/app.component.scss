@@ -243,3 +243,25 @@
 .main-content {
   padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
 }
+
+// #90: al desplegarse el menú, las opciones entran escalonadas. La animación sigue
+// a la clase mat-drawer-opened, así que en el celular corre cada vez que se abre.
+.sidenav-content.mat-drawer-opened .mat-mdc-list-item {
+  animation: opcion-entra 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+
+  @for $i from 1 through 10 {
+    &:nth-child(#{$i}) { animation-delay: #{40ms + ($i - 1) * 35ms}; }
+  }
+}
+
+@keyframes opcion-entra {
+  from { opacity: 0; transform: translateX(-14px); }
+  to { opacity: 1; transform: none; }
+}
+
+// Cerrar sesión, al pie, entra último.
+.sidenav-content.mat-drawer-opened .sidenav-footer .mat-mdc-list-item { animation-delay: 340ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sidenav-content.mat-drawer-opened .mat-mdc-list-item { animation: none; }
+}

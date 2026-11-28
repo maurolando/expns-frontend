@@ -427,3 +427,19 @@ textarea[matInput]:not(.sin-mayusculas) {
   --mdc-circular-progress-active-indicator-color: currentColor;
   circle { stroke: currentColor !important; }
 }
+
+// #90: cada pantalla entra con un fundido corto al navegar. El componente de la
+// ruta se inserta al lado del router-outlet, así que la animación corre en cada cambio.
+.main-content > router-outlet + * {
+  display: block;
+  animation: pantalla-entra 0.28s ease-out both;
+}
+
+@keyframes pantalla-entra {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .main-content > router-outlet + * { animation: none; }
+}

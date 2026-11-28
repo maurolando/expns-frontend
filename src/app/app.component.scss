@@ -52,10 +52,20 @@
   }
 }
 
-.logout-btn {
-  color: var(--text-secondary);
-  transition: color 0.2s;
-  &:hover { color: var(--danger-strong); }
+// El contenedor interno del sidenav en columna, para empujar el pie hacia abajo.
+.sidenav-content ::ng-deep .mat-drawer-inner-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidenav-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--glass-border);
+  padding: 8px 0 12px;
+}
+
+.sidenav-content .mat-mdc-list-item.logout-item:hover {
+  &, .mdc-list-item__primary-text, mat-icon { color: var(--danger-strong) !important; }
 }
 
 .sidenav-container {

@@ -124,6 +124,7 @@
       </mat-card-header>
       <mat-card-content style="padding-top: 16px;">
         <div class="table-container">
+          <app-skeleton *ngIf="(ahorrosList$ | async) === null" [filas]="3"></app-skeleton>
           <div *ngIf="(ahorrosList$ | async)?.length === 0" class="no-ahorros">
             <mat-icon>info</mat-icon>
             <p>No se han registrado ahorros para este mes.</p>

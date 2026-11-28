@@ -10,6 +10,8 @@
     </div>
   </div>
 
+  <app-skeleton *ngIf="(categorias$ | async) === null" [filas]="4" [alto]="88"></app-skeleton>
+
   <div class="categories-grid">
     <mat-card *ngFor="let cat of (categorias$ | async)" class="cat-card mat-elevation-z3">
       <mat-card-header>

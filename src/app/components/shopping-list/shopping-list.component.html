@@ -44,6 +44,8 @@
   </mat-card>
 
   <div class="list-content">
+    <app-skeleton *ngIf="(shoppingList$ | async) === null" [filas]="4"></app-skeleton>
+
     <div class="empty-state" *ngIf="(shoppingList$ | async)?.length === 0">
       <mat-icon>production_quantity_limits</mat-icon>
       <h2>Tu lista está vacía</h2>

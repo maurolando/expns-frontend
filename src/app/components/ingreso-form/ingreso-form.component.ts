@@ -4,7 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Ingreso, IngresoService } from 'src/app/services/ingreso/ingreso.service';
 import { PersonaService, Persona } from 'src/app/services/persona/persona.service';
 import { Categoria, ExpenseService } from 'src/app/services/expense/expense.service';
-import { Observable } from 'rxjs';
+import { Observable, finalize } from 'rxjs';
 import { NotificationService } from 'src/app/services/notification/notification.service';
 import { fromLocalISODate, toLocalISODate } from 'src/app/utils/date.util';
 
@@ -16,6 +16,8 @@ import { fromLocalISODate, toLocalISODate } from 'src/app/utils/date.util';
 export class IngresoFormComponent implements OnInit {
   form: FormGroup;
   personas$!: Observable<Persona[]>;
+  /** #91: spinner en Guardar y sin doble click mientras responde el servidor. */
+  guardando = false;
   categorias$!: Observable<Categoria[]>;
 
   /** Sin ingreso es alta; con ingreso, edicion. El dialogo lo decide al abrirse. */
@@ -67,7 +69,8 @@ export class IngresoFormComponent implements OnInit {
       ? this.service.updateIngreso(this.ingreso!.id!, v.monto, fecha, v.categoriaId, v.personaId, v.recurrent)
       : this.service.createIngreso(v.monto, fecha, v.categoriaId, v.personaId, v.recurrent);
 
-    peticion.subscribe({
+    this.guardando = true;
+    peticion.pipe(finalize(() => this.guardando = false)).subscribe({
       next: () => {
         this.notify.success(this.editando ? 'Ingreso actualizado' : 'Ingreso registrado con éxito');
         this.dialogRef.close(true);

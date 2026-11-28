@@ -33,8 +33,9 @@
         <button mat-stroked-button (click)="finalizeMonth()">
           <mat-icon>task_alt</mat-icon> Finalizar mes
         </button>
-        <button mat-stroked-button (click)="descargarReporte()">
-          <mat-icon>picture_as_pdf</mat-icon> Reporte PDF
+        <button mat-stroked-button (click)="descargarReporte()" [disabled]="generandoReporte">
+          <mat-spinner *ngIf="generandoReporte" diameter="18" class="spinner-boton"></mat-spinner>
+          <mat-icon *ngIf="!generandoReporte">picture_as_pdf</mat-icon> Reporte PDF
         </button>
       </ng-container>
       <button *ngIf="vista === 'pagos'" mat-stroked-button (click)="openBudgetDialog()">
@@ -85,7 +86,9 @@
         </button>
       </mat-card-header>
       <mat-card-content>
-        <h2>{{ balance$ | async | number:'1.0-0' }} Gs.</h2>
+        <ng-container *ngIf="{ v: balance$ | async } as d">
+          <h2 *ngIf="d.v !== null; else cargandoMonto">{{ d.v | number:'1.0-0' }} Gs.</h2>
+        </ng-container>
         <button mat-button class="ver-por-persona" (click)="abrirSaldosPorPersona()">
           <mat-icon>groups</mat-icon> Por persona
         </button>
@@ -101,7 +104,9 @@
         <mat-card-title>Gasto Total</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <h2>{{ totalExpenses$ | async | number:'1.0-0' }} Gs.</h2>
+        <ng-container *ngIf="{ v: totalExpenses$ | async } as d">
+          <h2 *ngIf="d.v !== null; else cargandoMonto">{{ d.v | number:'1.0-0' }} Gs.</h2>
+        </ng-container>
         <p class="pendiente-line" *ngIf="(totalPending$ | async) as pendiente">
           <mat-icon>schedule</mat-icon>
           + {{ pendiente | number:'1.0-0' }} Gs. pendientes de pago
@@ -118,7 +123,9 @@
         <mat-card-title>Ingreso Disponible</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <h2>{{ totalIncome$ | async | number:'1.0-0' }} Gs.</h2>
+        <ng-container *ngIf="{ v: totalIncome$ | async } as d">
+          <h2 *ngIf="d.v !== null; else cargandoMonto">{{ d.v | number:'1.0-0' }} Gs.</h2>
+        </ng-container>
         <p class="last-record" *ngIf="(lastDates$ | async) as dates">
           Último registro: {{ dates.lastIngreso !== 'N/A' ? (dates.lastIngreso | date:'dd/MM/yyyy') : 'N/A' }}
         </p>
@@ -131,7 +138,9 @@
         <mat-card-title>Ahorro Total</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <h2>{{ totalSavings$ | async | number:'1.0-0' }} Gs.</h2>
+        <ng-container *ngIf="{ v: totalSavings$ | async } as d">
+          <h2 *ngIf="d.v !== null; else cargandoMonto">{{ d.v | number:'1.0-0' }} Gs.</h2>
+        </ng-container>
         <p class="last-record">
           Acumulado en contenedor
         </p>
@@ -316,6 +325,11 @@
   <mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Cerrar</button>
   </mat-dialog-actions>
+</ng-template>
+
+<!-- #91: el monto de cada tarjeta mientras llega; 0 es un valor válido, por eso se compara con null. -->
+<ng-template #cargandoMonto>
+  <app-skeleton [filas]="1" [alto]="40"></app-skeleton>
 </ng-template>
 
 <ng-template #cargandoDialogo>

@@ -192,6 +192,8 @@
         [class.selected]="selectedGasto?.id === row.id"
         (click)="selectGasto(row)"></tr>
   </table>
+
+  <app-skeleton *ngIf="cargando" [filas]="6"></app-skeleton>
   </div>
 
   <!-- Paginación -->
@@ -202,7 +204,7 @@
                  class="custom-paginator">
   </mat-paginator>
 
-  <div *ngIf="dataSource.data.length === 0" class="empty-state" style="text-align: center; padding: 40px; color: var(--text-secondary);">
+  <div *ngIf="!cargando && dataSource.data.length === 0" class="empty-state" style="text-align: center; padding: 40px; color: var(--text-secondary);">
     <mat-icon style="font-size: 48px; width: 48px; height: 48px; margin-bottom: 12px; opacity: 0.5;">inbox</mat-icon>
     <p>No se encontraron gastos que coincidan con la búsqueda.</p>
   </div>

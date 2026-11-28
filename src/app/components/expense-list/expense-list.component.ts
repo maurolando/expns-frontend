@@ -28,6 +28,8 @@ export class ExpenseListComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedGasto: Gasto | null = null;
   
   dataSource = new MatTableDataSource<Gasto>([]);
+  /** #91: hasta la primera respuesta; antes se veía "No hay gastos" mientras cargaba. */
+  cargando = true;
   personas$!: Observable<Persona[]>;
   categorias$!: Observable<Categoria[]>;
 
@@ -118,6 +120,7 @@ export class ExpenseListComponent implements OnInit, AfterViewInit, OnDestroy {
       })
     ).subscribe(filteredGastos => {
       this.dataSource.data = filteredGastos;
+      this.cargando = false;
     });
   }
 

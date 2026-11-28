@@ -16,6 +16,8 @@
     </div>
   </div>
 
+  <app-skeleton *ngIf="(personas$ | async) === null" [filas]="3"></app-skeleton>
+
   <div class="list-container mat-elevation-z3"
        *ngIf="{ lista: (personas$ | async) || [], movil: esMovil$ | async } as datos">
 

@@ -124,6 +124,7 @@
       </mat-card-header>
       <mat-card-content style="padding-top: 16px;">
         <div class="table-container">
+          <app-skeleton *ngIf="(ahorrosList$ | async) === null" [filas]="3"></app-skeleton>
           <div *ngIf="(ahorrosList$ | async)?.length === 0" class="no-ahorros">
             <mat-icon>info</mat-icon>
             <p>No se han registrado ahorros para este mes.</p>
@@ -228,8 +229,9 @@
         </mat-form-field>
       </div>
 
-      <button mat-flat-button color="primary" type="submit" [disabled]="savingForm.invalid" class="submit-btn">
-        <mat-icon>save</mat-icon> {{ editandoId ? 'Guardar cambios' : 'Registrar Ahorro' }}
+      <button mat-flat-button color="primary" type="submit" [disabled]="savingForm.invalid || guardando" class="submit-btn">
+        <mat-spinner *ngIf="guardando" diameter="18" class="spinner-boton"></mat-spinner>
+        <mat-icon *ngIf="!guardando">save</mat-icon> {{ guardando ? 'Guardando...' : (editandoId ? 'Guardar cambios' : 'Registrar Ahorro') }}
       </button>
     </form>
   </mat-dialog-content>

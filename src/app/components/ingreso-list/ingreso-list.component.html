@@ -110,6 +110,8 @@
         (click)="selectIngreso(row)"></tr>
   </table>
 
+  <app-skeleton *ngIf="(ingresos$ | async) === null" [filas]="5"></app-skeleton>
+
   <div *ngIf="(ingresos$ | async)?.length === 0" class="empty-state">
     <mat-icon>inbox</mat-icon>
     <p>No hay ingresos registrados aún</p>

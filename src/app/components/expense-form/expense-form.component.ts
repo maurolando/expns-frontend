@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit, Optional } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { Observable } from 'rxjs';
+import { Observable, finalize } from 'rxjs';
 import { Categoria, ExpenseService, Gasto } from 'src/app/services/expense/expense.service';
 import { Persona, PersonaService } from 'src/app/services/persona/persona.service';
 import { NotificationService } from 'src/app/services/notification/notification.service';
@@ -141,6 +141,9 @@ export class ExpenseFormComponent implements OnInit {
     }
   }
 
+  /** #91: Render puede tardar; el spinner avisa y evita que un doble click lo mande dos veces. */
+  guardando = false;
+
   save() {
     if (this.form.valid) {
       // getRawValue: 'pagado' se deshabilita en gastos compartidos y form.value lo omitiría.
@@ -176,7 +179,8 @@ export class ExpenseFormComponent implements OnInit {
       };
 
       if (this.esEdicion) {
-        this.service.updateGasto(this.gastoAEditar!.id!, payload).subscribe({
+        this.guardando = true;
+        this.service.updateGasto(this.gastoAEditar!.id!, payload).pipe(finalize(() => this.guardando = false)).subscribe({
           next: () => {
             this.notify.success('Gasto actualizado');
             this.dialogRef.close(true);
@@ -186,7 +190,8 @@ export class ExpenseFormComponent implements OnInit {
         return;
       }
 
-      this.service.createGasto(payload).subscribe({
+      this.guardando = true;
+      this.service.createGasto(payload).pipe(finalize(() => this.guardando = false)).subscribe({
         next: () => {
           this.notify.success(pagado
             ? 'Gasto registrado y descontado del balance'

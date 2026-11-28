@@ -86,9 +86,12 @@ export function createApollo(httpLink: HttpLink, auth: AuthService) {
   };
 }
 
+import { SkeletonComponent } from './components/skeleton/skeleton.component';
+
 @NgModule({
   declarations: [
     AppComponent,
+    SkeletonComponent,
     DashboardComponent,
     ExpenseListComponent,
     ExpenseFormComponent,

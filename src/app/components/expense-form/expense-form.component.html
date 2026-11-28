@@ -118,5 +118,8 @@
   </form>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button mat-raised-button color="primary" class="guardar-ancho" [disabled]="form.invalid" (click)="save()">Guardar</button>
+  <button mat-raised-button color="primary" class="guardar-ancho" [disabled]="form.invalid || guardando" (click)="save()">
+    <mat-spinner *ngIf="guardando" diameter="18" class="spinner-boton"></mat-spinner>
+    {{ guardando ? 'Guardando...' : 'Guardar' }}
+  </button>
 </mat-dialog-actions>

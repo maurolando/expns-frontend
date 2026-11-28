@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, TemplateRef, ViewChild } from '@angular/c
 import { CierreResult, ExpenseService, Gasto, ResumenCuotas, SaldoPersona } from 'src/app/services/expense/expense.service';
 import { IngresoService } from 'src/app/services/ingreso/ingreso.service';
 import { AhorroService } from 'src/app/services/ahorro/ahorro.service';
-import { Observable, combineLatest, map, startWith, switchMap, Subject, takeUntil, shareReplay, catchError, of } from 'rxjs';
+import { Observable, combineLatest, map, startWith, switchMap, Subject, takeUntil, shareReplay, catchError, of, finalize } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { MatDialog } from '@angular/material/dialog';
@@ -372,6 +372,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return omitidos > 0 ? `${base} (${omitidos} ya existían).` : `${base}.`;
   }
 
+  /** #91: el PDF se arma en el servidor y tarda unos segundos. */
+  generandoReporte = false;
+
   descargarReporte() {
     const m = this.monthControl.value;
     const y = this.yearControl.value;
@@ -383,7 +386,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     const monthLabel = this.months.find(x => x.value === Number(m))?.label || 'mes';
 
-    this.expenseService.generarReporteMensual(Number(m), Number(y)).subscribe({
+    this.generandoReporte = true;
+    this.expenseService.generarReporteMensual(Number(m), Number(y)).pipe(finalize(() => this.generandoReporte = false)).subscribe({
       next: (base64) => {
         try {
           const byteCharacters = atob(base64);

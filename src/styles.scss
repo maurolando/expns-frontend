@@ -417,3 +417,13 @@ textarea[matInput]:not(.sin-mayusculas) {
     }
   }
 }
+
+// #91: spinner chico dentro de un botón, alineado con el texto y del color del texto.
+// Material le pone display: block; con la clase doble gana sin !important.
+.mat-mdc-progress-spinner.spinner-boton {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+  --mdc-circular-progress-active-indicator-color: currentColor;
+  circle { stroke: currentColor !important; }
+}
